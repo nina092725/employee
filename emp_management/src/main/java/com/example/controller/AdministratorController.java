@@ -101,7 +101,7 @@ public class AdministratorController {
     }
 
     /**
-     * ログインします.
+     * ログイン
      * 
      * @param form 管理者情報用フォーム
      * @return ログイン後の従業員一覧画面
