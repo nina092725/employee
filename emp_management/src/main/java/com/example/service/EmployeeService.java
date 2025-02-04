@@ -3,11 +3,14 @@ package com.example.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.domain.Employee;
 import com.example.repository.EmployeeRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * 従業員情報を操作するサービス.
@@ -21,6 +24,9 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate; // ★ JdbcTemplate をインジェクション
+
 
     /**
      * 従業員情報を全件取得します.
@@ -49,9 +55,24 @@ public class EmployeeService {
      * 
      * @param employee 更新した従業員情報
      */
+    // public void update(Employee employee) {
+    //     employeeRepository.update(employee);
+    // }
     public void update(Employee employee) {
-        employeeRepository.update(employee);
-    }
+    SqlParameterSource param = new BeanPropertySqlParameterSource(employee);
+    String updateSql = """
+        UPDATE employees SET 
+        name=:name, 
+        mail_address=:mailAddress, 
+        address=:address, 
+        telephone=:telephone, 
+        salary=:salary, 
+        dependents_count=:dependentsCount 
+        WHERE id=:id
+        """;
+        jdbcTemplate.update(updateSql, param);
+}
+
 
     /**
      * 名前検索を行います.

@@ -52,15 +52,24 @@ public class EmployeeController {
 	@GetMapping("/showList")
 public String showList(@RequestParam(name = "searchWord", required = false) String searchWord, Model model) {
     List<Employee> employeeList;
+	String errorMessage = null; // ★ 変数を宣言
     
     if (searchWord != null && !searchWord.isEmpty()) {
         employeeList = employeeService.findByNameContaining(searchWord);
+		// 名前で検索した結果、従業員が見つからなかった場合
+        if (employeeList.isEmpty()) {
+            errorMessage = "該当する従業員はいません。";
+        }
     } else {
         employeeList = employeeService.showList();
     }
     
     model.addAttribute("employeeList", employeeList);
     model.addAttribute("searchWord", searchWord); // 検索ワードをモデルに追加（再表示時に使う）
+
+	if (errorMessage != null) {
+        model.addAttribute("errorMessage", errorMessage); // エラーメッセージをモデルに追加
+    }
     
     return "employee/list";
 }
@@ -77,12 +86,18 @@ public String showList(@RequestParam(name = "searchWord", required = false) Stri
 	 * @param model モデル
 	 * @return 従業員詳細画面
 	 */
+	// @GetMapping("/showDetail")
+	// public String showDetail(String id, Model model) {
+	// 	Employee employee = employeeService.showDetail(Integer.parseInt(id));
+	// 	model.addAttribute("employee", employee);
+	// 	return "employee/detail";
+	// }
 	@GetMapping("/showDetail")
-	public String showDetail(String id, Model model) {
-		Employee employee = employeeService.showDetail(Integer.parseInt(id));
-		model.addAttribute("employee", employee);
-		return "employee/detail";
-	}
+public String showDetail(@RequestParam("id") Integer id, Model model) {
+    Employee employee = employeeService.showDetail(id);
+    model.addAttribute("employee", employee); // ★ employeeオブジェクトをモデルに追加
+    return "employee/detail";
+}
 
 
 	/////////////////////////////////////////////////////
@@ -97,11 +112,20 @@ public String showList(@RequestParam(name = "searchWord", required = false) Stri
 	@PostMapping("/update")
 	public String update(@Validated UpdateEmployeeForm form, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return showDetail(form.getId(), model);
+			return showDetail(Integer.parseInt(form.getId()), model);
 		}
 		Employee employee = new Employee();
 		employee.setId(form.getIntId());
 		employee.setDependentsCount(form.getIntDependentsCount());
+
+
+		employee.setName(form.getName());
+   	 	employee.setMailAddress(form.getMailAddress());
+    	employee.setAddress(form.getAddress());
+    	employee.setTelephone(form.getTelephone());
+    	employee.setSalary(form.getSalary());
+    	
+
 		employeeService.update(employee);
 		return "redirect:/employee/showList";
 	}
