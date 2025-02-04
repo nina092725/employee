@@ -90,9 +90,23 @@ public class EmployeeRepository {
      * @param name 検索ワード
      * @return 検索結果
      */
+    // public List<Employee> findByNameContaining(String name) {
+    //     String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count FROM employees WHERE name LIKE :name ORDER BY hire_date";
+    //     SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + name + "%");
+    //     return template.query(sql, param, EMPLOYEE_ROW_MAPPER);
+    // }
+
     public List<Employee> findByNameContaining(String name) {
-        String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count FROM employees WHERE name LIKE :name ORDER BY hire_date";
-        SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + name + "%");
+        String sql = "SELECT id,name,image,gender,hire_date,mail_address,zip_code,address,telephone,salary,characteristics,dependents_count "
+                + "FROM employees WHERE name LIKE :name ESCAPE '\\' ORDER BY hire_date";
+    
+        // `_` や `%`、`\` を `\_` や `\%`、`\\` に変換してエスケープ
+        String escapedName = name.replace("\\", "\\\\").replace("_", "\\_").replace("%", "\\%");
+    
+        SqlParameterSource param = new MapSqlParameterSource().addValue("name", "%" + escapedName + "%");
         return template.query(sql, param, EMPLOYEE_ROW_MAPPER);
     }
+    
+
+
 }

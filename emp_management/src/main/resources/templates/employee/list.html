@@ -54,6 +54,11 @@
                     <input type="text" name="searchWord" th:value="${searchWord}" placeholder="名前で検索">
                     <button type="submit">検索</button>
                 </form>
+                
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+
                 <table class="table table-striped">
                     <thead>
                         <tr>
