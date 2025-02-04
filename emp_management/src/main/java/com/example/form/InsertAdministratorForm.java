@@ -2,11 +2,10 @@ package com.example.form;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-// import jakarta.validation.constraints.Email;
-// import jakarta.validation.constraints.NotBlank;
-// import jakarta.validation.constraints.Size;
+
 /**
  * 管理者情報登録時に使用するフォーム.
  * 
@@ -16,14 +15,16 @@ import jakarta.validation.constraints.Size;
 public class InsertAdministratorForm {
 	/** 名前 */
 	@NotBlank(message = "名前を入力してください")
-	@Size(max = 50, message = "名前は50文字以内で入力してください")
+	@Size(max = 100, message = "名前は100文字以内で入力してください")
 	private String name;
 	/** メールアドレス */
 	@NotBlank(message = "メールアドレスを入力してください")
+	@Size(max = 100, message = "メールアドレスは100文字以内で入力してください")
     @Email(message = "メールアドレスの形式で入力してください")
 	private String mailAddress;
 	/** パスワード */
-	@Size(min=1,max=127,message="パスワードは1文字以上127文字以内で入力してください")
+	@Size(min=8,max=20,message="パスワードは1文字以上20文字以内で入力してください")
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$", message = "パスワードは大文字、小文字、数字を含む必要があります")
 	private String password;
 
 	public String getName() {
