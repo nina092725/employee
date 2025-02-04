@@ -73,6 +73,11 @@
                         th:errorclass="error-input"
                         value="山田太郎"
                       />
+
+                      
+
+
+
                     </div>
                   </div>
                 </div>
@@ -98,6 +103,10 @@
                         value="yamada@mail.com"
                       />
                     </div>
+                    <!-- メールアドレス重複エラーメッセージ -->
+    <div style="color: red;">
+      <p th:if="${errorMessage}" th:text="${errorMessage}"></p>
+  </div>
                   </div>
                 </div>
                 <!-- パスワード -->

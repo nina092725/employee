@@ -25,9 +25,11 @@ public class AdministratorService {
 	 * 
 	 * @param administrator 管理者情報
 	 */
-	public void insert(Administrator administrator) {
-		administratorRepository.insert(administrator);
-	}
+	// public void insert(Administrator administrator) {
+	// 	administratorRepository.insert(administrator);
+		
+	// }
+
 
 	/**
 	 * ログインをします.
@@ -37,7 +39,27 @@ public class AdministratorService {
 	 * @return 管理者情報 存在しない場合はnullが返ります
 	 */
 	public Administrator login(String mailAddress, String password) {
-		Administrator administrator = administratorRepository.findByMailAddressAndPassward(mailAddress, password);
+		Administrator administrator = administratorRepository.findByMailAddressAndPassword(mailAddress, password);
 		return administrator;
 	}
+
+	
+
+	public boolean insert(Administrator administrator) {
+        // メールアドレスの重複チェック
+        if (administratorRepository.existsByMailAddress(administrator.getMailAddress())) {
+            return false; // 重複している場合は登録しない
+        }
+        administratorRepository.insert(administrator);
+        return true; // 登録成功
+    }
+
+    // public Administrator login(String mailAddress, String password) {
+    //     return administratorRepository.findByMailAddressAndPassward(mailAddress, password);
+    // }
+
+    public boolean existsByMailAddress(String mailAddress) {
+        return administratorRepository.existsByMailAddress(mailAddress);
+    }
+	
 }

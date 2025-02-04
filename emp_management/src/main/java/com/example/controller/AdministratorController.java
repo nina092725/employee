@@ -2,6 +2,7 @@ package com.example.controller;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.domain.Administrator;
@@ -83,9 +85,18 @@ public class AdministratorController {
         Administrator administrator = new Administrator();
         // フォームからドメインにプロパティ値をコピー
         BeanUtils.copyProperties(form, administrator);
-        administratorService.insert(administrator);
-        return "employee/list";
+    //     administratorService.insert(administrator);
+    //     return "employee/list";
+    // }
+    // サービスで登録処理（重複チェック含む）
+    boolean isInserted = administratorService.insert(administrator);
+    if (!isInserted) {
+        model.addAttribute("errorMessage", "このメールアドレスは既に登録されています。");
+        return "administrator/insert"; // エラーメッセージ付きで登録画面に戻る
     }
+
+    return "administrator/login"; // 正常に登録された場合
+}
 
     /////////////////////////////////////////////////////
     // ユースケース：ログインをする
@@ -115,7 +126,7 @@ public class AdministratorController {
             return "redirect:/";
         }
 
-        // ★ ここで名前をHttpSessionに保存 ★
+        // ★ここで名前をHttpSessionに保存★
         HttpSession session = request.getSession();
         session.setAttribute("administratorName", administrator.getName());
 
@@ -134,6 +145,13 @@ public class AdministratorController {
     public String logout() {
         session.invalidate();
         return "redirect:/";
+    }
+
+	// 重複チェック
+	@GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String mailAddress) {
+        boolean exists = administratorService.existsByMailAddress(mailAddress);
+        return ResponseEntity.ok(exists);
     }
 
 }
